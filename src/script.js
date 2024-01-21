@@ -16,12 +16,15 @@ signupButton.addEventListener('click', async (event) => {
     }
 
     try {
-        const response = await fetch('process_signup.php', {
+        const response = await fetch('/.netlify/functions/process_signup', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
+                'Content-Type': 'application/json',
             },
-            body: `username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`,
+            body: JSON.stringify({
+                username: username,
+                password: password,
+            }),
         });
 
         if (response.ok) {
