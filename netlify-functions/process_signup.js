@@ -1,35 +1,27 @@
-const fs = require('fs');
-const path = require('path');
-
-exports.handler = async function (event, context) {
+exports.handler = async function(event, context) {
     try {
-        console.log('Function execution started');
-
-        const { username, password } = JSON.parse(event.body);
-        const newData = { username, password };
-
-        // Adjust the file path based on your project structure
-        const filePath = path.join(__dirname, '..', 'user_data.json');
-
-        // Read existing data or initialize an empty array
-        const existingData = fs.existsSync(filePath) ? JSON.parse(fs.readFileSync(filePath, 'utf-8')) : [];
-
-        // Append new data and write back to the file
-        existingData.push(newData);
-        fs.writeFileSync(filePath, JSON.stringify(existingData, null, 2));
-
-        console.log('Function execution completed successfully');
-
-        return {
-            statusCode: 200,
-            body: JSON.stringify({ message: 'User registered successfully!' }),
-        };
+      // Retrieve user data from environment variable or initialize an empty array
+      let userData = process.env.USER_DATA ? JSON.parse(process.env.USER_DATA) : [];
+  
+      // Extract username and password from the request body
+      const { username, password } = JSON.parse(event.body);
+  
+      // Add the new user to the userData array
+      userData.push({ username, password });
+  
+      // Update the USER_DATA environment variable with the modified array
+      process.env.USER_DATA = JSON.stringify(userData);
+  
+      return {
+        statusCode: 200,
+        body: JSON.stringify({ message: 'Signup successful' }),
+      };
     } catch (error) {
-        console.error('Error processing signup:', error);
-
-        return {
-            statusCode: 500,
-            body: JSON.stringify({ message: 'An unexpected error occurred' }),
-        };
+      console.error(error);
+      return {
+        statusCode: 500,
+        body: JSON.stringify({ message: 'Internal Server Error' }),
+      };
     }
-};
+  };
+  
