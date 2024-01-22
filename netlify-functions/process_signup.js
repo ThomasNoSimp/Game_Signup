@@ -3,6 +3,8 @@ const path = require('path');
 
 exports.handler = async function (event, context) {
     try {
+        console.log('Function execution started');
+
         const { username, password } = JSON.parse(event.body);
         const newData = { username, password };
 
@@ -16,12 +18,15 @@ exports.handler = async function (event, context) {
         existingData.push(newData);
         fs.writeFileSync(filePath, JSON.stringify(existingData, null, 2));
 
+        console.log('Function execution completed successfully');
+
         return {
             statusCode: 200,
             body: JSON.stringify({ message: 'User registered successfully!' }),
         };
     } catch (error) {
         console.error('Error processing signup:', error);
+
         return {
             statusCode: 500,
             body: JSON.stringify({ message: 'An unexpected error occurred' }),
